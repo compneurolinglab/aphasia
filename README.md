@@ -19,7 +19,7 @@ We use an **existing aphasia dataset** from:
 🔹 **Data Ethics & Privacy**:
 - **The dataset was originally approved from the Institutional Review Board of the State Key Laboratory of Cognitive Neuroscience and Learning, Beijing Normal University.).
 - **All patient data has been anonymized**.
-- **We do not redistribute this dataset**. Interested researchers should refer to the original papers for access.
+- **We do not share any data from this dataset**. Interested researchers should refer to the original papers and researchers for access.
 
 ---
 
