@@ -9,11 +9,9 @@ import copy
 from PIL import Image
 from transformers import GenerationConfig
 
-# Set working directory
 DIR = '/scratch/ResearchGroups/lt_jixingli/aphasia'
 os.chdir(DIR)
 
-# Set random seed for reproducibility
 def set_seed(seed=42):
     random.seed(seed)
     np.random.seed(seed)
@@ -24,14 +22,11 @@ def set_seed(seed=42):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-# Set device
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
-# Image path
 image_path = 'analysis/cookie_theft.png'
 
-# Generation configuration to control text generation
 generation_config = GenerationConfig(
     max_new_tokens=512,    # Maximum generated length
     min_new_tokens=200,    # Minimum generated length
@@ -44,7 +39,6 @@ generation_config = GenerationConfig(
 
 
 def load_model(device):
-    """ Load the model, tokenizer, and image processor on the specified device. """
     print(f"Loading model on device: {device}")
 
     # Load model, tokenizer, and image processor
@@ -73,7 +67,6 @@ def load_model(device):
     return model, model_copy, tokenizer, image_processor, original_weights
 
 def reconstruct_param_path(param_name):
-    """ Reconstruct the parameter path in the model from the parameter name. """
     parts = param_name.split('_')
     try:
         layer_num = int(parts[3])
@@ -95,7 +88,6 @@ def reconstruct_param_path(param_name):
         return None
 
 def zero_out_parameters(model, param_path, mask_tensor):
-    """ Zero out specific parameters in the model according to the provided mask. """
     params_dict = dict(model.named_parameters())
     target_param = params_dict.get(param_path, None)
 
@@ -114,7 +106,6 @@ def zero_out_parameters(model, param_path, mask_tensor):
     return True
 
 def zero_out_and_process(avg_folder, output_csv_path, model, model_copy, original_weights):
-    """ Process all .pt mask files, apply them to the model, and save the generated responses. """
     
     # Get all .pt files in the folder
     all_pt_files = [f for f in os.listdir(avg_folder) if f.endswith('.pt')]
@@ -181,15 +172,12 @@ def zero_out_and_process(avg_folder, output_csv_path, model, model_copy, origina
     
     print(f"Results saved to {output_csv_path}.")
 
-# Main execution
 set_seed(42)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
-# Load model
 model, model_copy, tokenizer, image_processor, original_weights = load_model(device)
 
-# Process all files and save results
 avg_folder = "model/top_1%/bool_mask/avg_wo_mass"
 output_csv_path = "model/top_1%/perf/results_wo_mass.csv"
 
