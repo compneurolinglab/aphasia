@@ -37,6 +37,15 @@ pattern = re.compile(r"text_model\.model\.layers\.(\d+)\..+$")
 
 model.eval()
 
+generation_config = GenerationConfig(
+    max_new_tokens=512,    # Maximum generated length
+    min_new_tokens=200,    # Minimum generated length
+    temperature=0.9,       # Increase randomness for diversity
+    top_p=0.85,            # Increase probability of exploring lower-ranked tokens
+    top_k=100,             # Expand candidate token pool for further diversity
+    num_beams=5,           # Use beam search to extend search space
+    repetition_penalty=1.5 
+)
 
 for layer_index in tqdm(range(num_layers), desc="Disabling layers"):
     try:
@@ -56,7 +65,7 @@ for layer_index in tqdm(range(num_layers), desc="Disabling layers"):
             image=image_path, 
             text="Please describe all the details of this image as thoroughly as possible in about 200 words.", 
             history=[], 
-            # generation_config=generation_config
+            generation_config=generation_config
             )
 
         results.append(response[0])
