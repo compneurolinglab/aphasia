@@ -103,7 +103,7 @@ def main():
 
     text_model_name = "chinese-alpaca-plus-7b"
     file_path = "control.txt"
-    output_dir = f"grad_mul_param_sent"
+    output_dir = "grad_mul_param"
     max_length = 32
     batch_size = 8
     
