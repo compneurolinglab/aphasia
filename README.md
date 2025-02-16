@@ -16,16 +16,8 @@ This repository contains the code used in our research on **lesioning large lang
 ## 📂 Dataset
 We use an **existing aphasia dataset** from:
 - **Bi et al. (2015), Han et al. (2013)**:  
-  - 51 **aphasia patients** (15 females, age: 48.08 ± 12.15 years).  
-  - 43 **healthy controls** (21 females, age: 49.3 ± 10.7 years).  
-  - Each patient is categorized into:
-    - **Broca’s aphasia**: 16 cases
-    - **Wernicke’s aphasia**: 11 cases
-    - **Global aphasia**: 24 cases
-  - Participants performed **picture description tasks** using the "Cookie Theft" image from the **Boston Diagnostic Aphasia Examination (BDAE)**.
-
 🔹 **Data Ethics & Privacy**:
-- **The dataset was originally collected under IRB approval** (Institution: [Original Institution Name]).
+- **The dataset was originally approved from the Institutional Review Board of the State Key Laboratory of Cognitive Neuroscience and Learning, Beijing Normal University.).
 - **All patient data has been anonymized**.
 - **We do not redistribute this dataset**. Interested researchers should refer to the original papers for access.
 
