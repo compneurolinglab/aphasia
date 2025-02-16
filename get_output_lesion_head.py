@@ -36,6 +36,16 @@ for name, param in model.text_model.named_parameters():
 # Set model to evaluation mode
 model.eval()
 
+generation_config = GenerationConfig(
+    max_new_tokens=512,    # Maximum generated length
+    min_new_tokens=200,    # Minimum generated length
+    temperature=0.9,       # Increase randomness for diversity
+    top_p=0.85,            # Increase probability of exploring lower-ranked tokens
+    top_k=100,             # Expand candidate token pool for further diversity
+    num_beams=5,           # Use beam search to extend search space
+    repetition_penalty=1.5 
+)
+
 
 for head_index in tqdm(range(num_heads), desc="Disabling heads"):
     # Empty history for each iteration
@@ -57,7 +67,7 @@ for head_index in tqdm(range(num_heads), desc="Disabling heads"):
             image=image_path, 
             text="Describe this image.", 
             history=history,
-            # generation_config=generation_config
+            generation_config=generation_config
             )
 
         results[head_index] = response[0]
