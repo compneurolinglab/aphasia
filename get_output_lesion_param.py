@@ -1,6 +1,3 @@
-# Environment Setup
-# Activate conda environment: conda activate model
-
 import visualcla
 import torch
 import os
