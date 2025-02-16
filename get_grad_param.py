@@ -101,16 +101,16 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
 
-    text_model_name = "/scratch/ResearchGroups/lt_jixingli/aphasia/model/chinese-alpaca-plus-7b"
-    file_path = "/scratch/ResearchGroups/lt_jixingli/aphasia/model/control_336.txt"
-    output_dir = f"/scratch/ResearchGroups/lt_jixingli/aphasia/model/grad_mul_param_sent"
+    text_model_name = "chinese-alpaca-plus-7b"
+    file_path = "control.txt"
+    output_dir = f"grad_mul_param_sent"
     max_length = 32
     batch_size = 8
     
     tokenizer = AutoTokenizer.from_pretrained(text_model_name)
     model = AutoModelForCausalLM.from_pretrained(text_model_name, torch_dtype=torch.float32)
     
-    model.gradient_checkpointing_enable()  # Enable gradient checkpointing
+    model.gradient_checkpointing_enable()  
     
     model.to(device)
 
