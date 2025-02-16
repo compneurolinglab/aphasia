@@ -2,7 +2,7 @@ import sys
 import visualcla
 import torch
 import re
-from tqdm import tqdm  # Add progress bar
+from tqdm import tqdm  
 from transformers import GenerationConfig
 import os
 import copy
@@ -11,7 +11,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 try:
     model, tokenizer, image_processor = visualcla.get_model_and_tokenizer_and_processor(
-        visualcla_model="/scratch/ResearchGroups/lt_jixingli/aphasia/model/visualcla",
+        visualcla_model="visualcla",
         torch_dtype=torch.float16,
         load_in_8bit=True,
         default_device=device
@@ -23,7 +23,7 @@ except Exception as e:
 
 num_layers = 32
 
-image_path = '/scratch/ResearchGroups/lt_jixingli/aphasia/analysis/cookie_theft.png'
+image_path = 'cookie_theft.png'
 
 results = []
 
@@ -38,13 +38,7 @@ pattern = re.compile(r"text_model\.model\.layers\.(\d+)\..+$")
 model.eval()
 
 generation_config = GenerationConfig(
-    max_new_tokens=512,    # Maximum generated length
     min_new_tokens=200,    # Minimum generated length
-    temperature=0.9,       # Increase randomness for diversity
-    top_p=0.85,            # Increase probability of exploring lower-ranked tokens
-    top_k=100,             # Expand candidate token pool for further diversity
-    num_beams=5,           # Use beam search to extend search space
-    repetition_penalty=1.5 
 )
 
 for layer_index in tqdm(range(num_layers), desc="Disabling layers"):
@@ -63,7 +57,7 @@ for layer_index in tqdm(range(num_layers), desc="Disabling layers"):
         response = visualcla.chat(
             model=model, 
             image=image_path, 
-            text="Please describe all the details of this image as thoroughly as possible in about 200 words.", 
+            text="请描述这张图片。", 
             history=[], 
             generation_config=generation_config
             )
@@ -73,15 +67,6 @@ for layer_index in tqdm(range(num_layers), desc="Disabling layers"):
         print(f"Error processing layer {layer_index + 1}: {e}")
         results.append(None)
 
-output_path = '/scratch/ResearchGroups/lt_jixingli/aphasia/model/disabled_lyr.txt'
-output_dir = os.path.dirname(output_path)
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
 
-try:
-    with open(output_path, 'w', encoding='utf-8') as f:
-        for i, response in enumerate(results, 1):
-            f.write(f"Disabled_{i}_Layers: {response}\n")
-    print("Results have been saved to TXT.")
-except Exception as e:
-    print(f"Error saving results to TXT: {e}")
+df = pd.DataFrame(results, columns=['response'])
+df.to_csv('results_layer.csv', index=True, encoding='utf-8')
