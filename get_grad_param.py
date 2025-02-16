@@ -8,7 +8,6 @@ import torch.nn as nn
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from torch.cuda.amp import autocast, GradScaler
 
-# Set random seed for reproducibility
 def set_seed(seed: int = 42):
     random.seed(seed)
     np.random.seed(seed)
@@ -16,7 +15,7 @@ def set_seed(seed: int = 42):
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
 
-# Define a custom dataset class
+
 class TextDatasetFromFile(Dataset):
     def __init__(self, file_path, tokenizer, max_length):
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -40,7 +39,6 @@ class TextDatasetFromFile(Dataset):
         labels = input_ids.clone()
         return {'input_ids': input_ids, 'labels': labels}
 
-# Define a function to compute and save grad_mul_param
 def calculate_and_save_grad_mul_param(model, train_dataloader, output_dir, device, accumulation_steps=8):
     model.train()
 
@@ -59,7 +57,6 @@ def calculate_and_save_grad_mul_param(model, train_dataloader, output_dir, devic
         input_ids = batch['input_ids'].to(device)
         labels = batch['labels'].to(device)
 
-        # Use autocast for mixed precision training
         with autocast():
             outputs = model(input_ids=input_ids)
             logits = outputs.logits
@@ -69,7 +66,6 @@ def calculate_and_save_grad_mul_param(model, train_dataloader, output_dir, devic
         # Accumulate gradients
         scaler.scale(loss).backward()
 
-        # Update weights every accumulation_steps iterations
         if step % accumulation_steps == 0:
             scaler.step(optimizer)
             scaler.update()
@@ -78,7 +74,6 @@ def calculate_and_save_grad_mul_param(model, train_dataloader, output_dir, devic
             # Clear cache
             torch.cuda.empty_cache()
 
-        # Save grad_mul_param at the final step
         if step == total_steps:
             saved_params = []
             for name, param in model.named_parameters():
@@ -96,7 +91,7 @@ def calculate_and_save_grad_mul_param(model, train_dataloader, output_dir, devic
                     print(f"No gradient for {name} at step {step}")
             print(f"Total saved parameters: {len(saved_params)}")
 
-# Main script
+
 def main():
     # Set random seed
     s = 42
@@ -106,7 +101,6 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
 
-    # Define paths and parameters
     text_model_name = "/scratch/ResearchGroups/lt_jixingli/aphasia/model/chinese-alpaca-plus-7b"
     file_path = "/scratch/ResearchGroups/lt_jixingli/aphasia/model/control_336.txt"
     output_dir = f"/scratch/ResearchGroups/lt_jixingli/aphasia/model/grad_mul_param_sent"
@@ -120,7 +114,6 @@ def main():
     
     model.to(device)
 
-    # Set all parameters of text_model to be trainable
     for name, param in model.named_parameters():
 #        if 'mlp' in name or 'attn' in name:
         param.requires_grad = True
@@ -134,7 +127,6 @@ def main():
     dataset = TextDatasetFromFile(file_path, tokenizer, max_length)
     train_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-    # Compute and save grad_mul_param at the final step
     calculate_and_save_grad_mul_param(model, train_dataloader, output_dir, device)
     print("Training and parameter saving completed.")
 
