@@ -7,9 +7,8 @@ import numpy as np
 from tqdm import tqdm
 import copy
 from PIL import Image
-from transformers import GenerationConfig
 
-DIR = '/scratch/ResearchGroups/lt_jixingli/aphasia'
+DIR = 'aphasia'
 os.chdir(DIR)
 
 def set_seed(seed=42):
@@ -26,11 +25,6 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 image_path = 'analysis/cookie_theft.png'
-
-generation_config = GenerationConfig(
-    min_new_tokens=200,    # Minimum generated length
-)
-
 
 def load_model(device):
     print(f"Loading model on device: {device}")
@@ -146,7 +140,6 @@ def zero_out_and_process(avg_folder, output_csv_path, model, model_copy, origina
                 image=image_path, 
                 text="请描述这张图片。", 
                 history=history, 
-                generation_config=generation_config
             )
             print(f"Response for {pt_file}: {response}")
             results.append((pt_file, response))
@@ -170,7 +163,7 @@ print(f"Using device: {device}")
 model, model_copy, tokenizer, image_processor, original_weights = load_model(device)
 
 avg_folder = "bool_mask"
-output_csv_path = "model/top_1%/perf/results.csv"
+output_csv_path = "results.csv"
 
 zero_out_and_process(
     avg_folder=avg_folder,
