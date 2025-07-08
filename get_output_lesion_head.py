@@ -4,7 +4,6 @@ import torch
 import re
 from tqdm import tqdm  
 import os
-from transformers import GenerationConfig
 import pandas as pd
 
 
@@ -36,10 +35,6 @@ for name, param in model.text_model.named_parameters():
 # Set model to evaluation mode
 model.eval()
 
-generation_config = GenerationConfig(
-    min_new_tokens=200
-)
-
 
 for head_index in tqdm(range(num_heads), desc="Disabling heads"):
     # Empty history for each iteration
@@ -61,7 +56,6 @@ for head_index in tqdm(range(num_heads), desc="Disabling heads"):
             image=image_path, 
             text="Describe this image.", 
             history=history,
-            generation_config=generation_config
             )
 
         results[head_index] = response[0]
