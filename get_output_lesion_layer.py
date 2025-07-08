@@ -3,7 +3,6 @@ import visualcla
 import torch
 import re
 from tqdm import tqdm  
-from transformers import GenerationConfig
 import os
 import copy
 
@@ -37,9 +36,6 @@ pattern = re.compile(r"text_model\.model\.layers\.(\d+)\..+$")
 
 model.eval()
 
-generation_config = GenerationConfig(
-    min_new_tokens=200,    # Minimum generated length
-)
 
 for layer_index in tqdm(range(num_layers), desc="Disabling layers"):
     try:
@@ -59,7 +55,6 @@ for layer_index in tqdm(range(num_layers), desc="Disabling layers"):
             image=image_path, 
             text="请描述这张图片。", 
             history=[], 
-            generation_config=generation_config
             )
 
         results.append(response[0])
